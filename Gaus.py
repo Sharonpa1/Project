@@ -1,19 +1,32 @@
-A = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
-# B = [[1, 0, 0], [-4, 1, 0], [0, 0, 1]]
-# sol = [1, 2, 3]
+A = [[2, 5, 9, 16], [6, 7, 1, 14], [0, 3, 2, 5]]
 
 
 def Mul_Matrix(A, B):
     # צריך לשנות לפי הגודל המתאים
-    result = [[0, 0, 0],
-              [0, 0, 0],
-              [0, 0, 0]]
+    result = [[0, 0, 0, 0],
+              [0, 0, 0, 0],
+              [0, 0, 0, 0]]
+
     for i in range(len(A)):
         for j in range(len(B[0])):
             for k in range(len(B)):
                 result[i][j] += A[i][k] * B[k][j]
 
     return result
+
+
+def OrderPivot(A, col):
+    max = abs(A[col][col])
+    row_index = col
+    for i in range(len(A)):
+        if i >= col:
+            if abs(A[i][col]) > max:
+                max = A[i][col]
+                row_index = i
+
+    tmp = A[row_index]
+    A[row_index] = A[col]
+    A[col] = tmp
 
 
 def Gaussian_Elimination(A):
@@ -29,10 +42,10 @@ def Gaussian_Elimination(A):
             for i in range(len(A)):
                 for j in range(len(A)):
                     E = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+                    OrderPivot(A, j)
                     if j >= i:
                         if i == j:
-                            if A[j][i] != 0:  # TODO check case of division by zero
-                                E[j][i] = 1 / A[j][i]
+                            E[j][i] = 1 / A[j][i]
                             for r in E:
                                 f.write(str(r))
                                 f.write("\n")
@@ -66,8 +79,7 @@ def Gaussian_Elimination(A):
                 for j in range(len(A)):
                     E = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
                     if j < i:
-                        if A[i][i] != 0:  # TODO check case of division by zero
-                            E[j][i] = - A[j][i] / A[i][i]
+                        E[j][i] = - A[j][i] / A[i][i]
                         for r in E:
                             f.write(str(r))
                             f.write("\n")
@@ -82,7 +94,11 @@ def Gaussian_Elimination(A):
                             f.write("\n")
                         f.write("####################\n\n")
 
-            print(f"Data written to file successfully!\nFile path: {filePath}\n")
+            print(f"\nData written to file successfully!\nFile path: {filePath}\n")
+            sol = [0, 0, 0]
+            for i in range(len(A)):
+                sol[i] = A[i][len(A)]
+            return sol
 
     except OSError as err:
         print(f"Error! cannot open the file. {err}.")
@@ -92,4 +108,5 @@ def Gaussian_Elimination(A):
         raise
 
 
-Gaussian_Elimination(A)
+sol = Gaussian_Elimination(A)
+print("Solution:", sol)
