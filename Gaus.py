@@ -16,6 +16,8 @@ def Mul_Matrix(A, B):
 
 
 def OrderPivot(A, col):
+    matrix = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+
     max = abs(A[col][col])
     row_index = col
     for i in range(len(A)):
@@ -24,9 +26,13 @@ def OrderPivot(A, col):
                 max = A[i][col]
                 row_index = i
 
-    tmp = A[row_index]
-    A[row_index] = A[col]
-    A[col] = tmp
+    tmp = matrix[row_index]
+    matrix[row_index] = matrix[col]
+    matrix[col] = tmp
+    return matrix
+    # tmp = A[row_index]
+    # A[row_index] = A[col]
+    # A[col] = tmp
 
 
 def Gaussian_Elimination(A):
@@ -42,7 +48,22 @@ def Gaussian_Elimination(A):
             for i in range(len(A)):
                 for j in range(len(A)):
                     E = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
-                    OrderPivot(A, j)
+                    E = OrderPivot(A, j)
+                    for r in E:
+                        f.write(str(r))
+                        f.write("\n")
+                    f.write("*\n")
+                    for r in A:
+                        f.write(str(r))
+                        f.write("\n")
+                    f.write("=\n")
+                    A = Mul_Matrix(E, A)
+                    for r in A:
+                        f.write(str(r))
+                        f.write("\n")
+                    f.write("####################\n\n")
+                    E = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+
                     if j >= i:
                         if i == j:
                             E[j][i] = 1 / A[j][i]
