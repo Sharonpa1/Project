@@ -1,3 +1,6 @@
+import math
+
+
 def gauss(m):
     # eliminate columns
     for col in range(len(m[0])):
@@ -81,8 +84,53 @@ def nevilleInterpolation(tbl, x):
 
 
 def cubic_splinesInterpolation(tbl, x):
-    pass
+    h_list = []
+    l_list = [1]
+    mue_list = [0]
+    d_list = [0]
+    for i in range(len(tbl) - 1):
+        h_list.append(tbl[i + 1][0] - tbl[i][0])
+    for i in range(1, len(tbl) - 1):
+        tmp = h_list[i] / (h_list[i - 1] + h_list[i])
+        l_list.append(tmp)
+        mue_list.append(1 - tmp)
+        d_list.append((6 / (h_list[i - 1] + h_list[i])) *
+                      (((tbl[i + 1][1] - tbl[i][1]) / h_list[i]) - ((tbl[i][1] - tbl[i - 1][1]) / h_list[i - 1])))
 
+    h_list.append(1)
+    l_list.append(1)
+    mue_list.append(0)
+    d_list.append(0)
+
+    matrix = []
+    row = []
+    for i in range(len(tbl) + 1):
+        row.append(0)
+    for i in range(len(tbl)):
+        matrix.append(list(row))
+    for i in range(len(tbl)):
+        matrix[i][i] = 2
+        matrix[i][len(tbl)] = d_list[i]
+        if i != 0:
+            matrix[i][i - 1] = mue_list[i]
+        if i != len(tbl) - 1:
+            matrix[i][i + 1] = l_list[i]
+
+    m_list = gauss(matrix)
+
+    for i in range(len(tbl)):
+        x1 = tbl[i][0]
+        y1 = tbl[i][1]
+        m1 = m_list[i]
+        h1 = h_list[i]
+        x2 = tbl[i + 1][0]
+        y2 = tbl[i + 1][1]
+        m2 = m_list[i + 1]
+        h2 = h_list[i + 1]
+        if x1 <= x <= x2:
+            return (((x2 - x) ** 3 * m1) + ((x - x1) ** 3 * m2)) / (6 * h1) + \
+                   ((((x2 - x) * y1) + ((x - x1) * y2)) / h1) - \
+                   (((((x2 - x) * m1) + ((x - x1) * m2)) / 6) * h1)
 
 # tbl = ((0, 0), (1, 0.8415), (2, 0.9093), (3, 0.1411), # TODO לבדוק למה לא עובד עם הדוגמא הזאת
 #        (4, -0.7568), (5, -0.9589), (6, -0.2794))
@@ -94,8 +142,11 @@ def cubic_splinesInterpolation(tbl, x):
 # tbl = ((1, 1), (2, 0), (4, 1.5))
 # x = 3
 
-tbl = ((1, 0), (1.2, 0.112463), (1.3, 0.167996), (1.4, 0.222709))
-x = 1.28
+# tbl = ((1, 0), (1.2, 0.112463), (1.3, 0.167996), (1.4, 0.222709))
+# x = 1.28
+
+tbl = ((0, 0), (math.pi / 6, 0.5), (math.pi / 4, 0.7072), (math.pi / 2, 1))
+x = math.pi / 3
 
 if x < tbl[0][0] or x > tbl[len(tbl) - 1][0]:
     print("x is not in range")
@@ -104,6 +155,6 @@ if x < tbl[0][0] or x > tbl[len(tbl) - 1][0]:
 # print("Linear Interpolation:", linearInterpolation(tbl, x))
 # # print(gauss([[1, 1, 1, 0.8415], [1, 2, 4, 0.9093], [1, 3, 9, 0.1411]]))
 # print("Polynomial Interpolation:", polynomialInterpolation(tbl, x))
-print("Lagrange Interpolation:", lagrangeInterpolation(tbl, x))
-print("Neville Interpolation:", nevilleInterpolation(tbl, x))
+# print("Lagrange Interpolation:", lagrangeInterpolation(tbl, x))
+# print("Neville Interpolation:", nevilleInterpolation(tbl, x))
 print("Cubic Splines Interpolation:", cubic_splinesInterpolation(tbl, x))
