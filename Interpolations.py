@@ -1,26 +1,51 @@
 import math
 
 
+def GaussSeidel(matrixA, vectorB):
+    num_of_iterations = 1000000
+    # if not check(matrixA):
+    #     num_of_iterations = 100
+    e = 1
+    x0 = 0
+    y0 = 0
+    z0 = 0
+    index = 1
+    while (e >= eps and num_of_iterations > 0):
+        x1 = (vectorB[0] - matrixA[0][1] * y0 - matrixA[0][2] * z0) / matrixA[0][0]
+        y1 = (vectorB[1] - matrixA[1][0] * x1 - matrixA[1][2] * z0) / matrixA[1][1]
+        z1 = (vectorB[2] - matrixA[2][0] * x1 - matrixA[2][1] * y1) / matrixA[2][2]
+
+        print(index, '%0.6f\t%0.6f\t%0.6f\t' % (x1, y1, z1))
+        e = abs(x1 - x0)
+        x0 = x1
+        y0 = y1
+        z0 = z1
+
+        index = index + 1
+        num_of_iterations = num_of_iterations - 1
+
+    return [x1, y1, z1]
+    # print('\nSolution: x = %0.6f, y = %0.6f and z = %0.6f\n' % (x1, y1, z1))
+
+
+eps = 0.00001
+
+
 def gauss(m):
-    # eliminate columns
     for col in range(len(m[0])):
         for row in range(col+1, len(m)):
             r = [(rowValue * (-(m[row][col] / m[col][col]))) for rowValue in m[col]]
             m[row] = [sum(pair) for pair in zip(m[row], r)]
-    # now backsolve by substitution
     ans = []
-    m.reverse() # makes it easier to backsolve
+    m.reverse()
     for sol in range(len(m)):
         if sol == 0:
             ans.append(m[sol][-1] / m[sol][-2])
         else:
             inner = 0
-            # substitute in all known coefficients
             for x in range(sol):
-                inner += (ans[x]*m[sol][-2-x])
-            # the equation is now reduced to ax + b = c form
-            # solve with (c - b) / a
-            ans.append((m[sol][-1]-inner)/m[sol][-sol-2])
+                inner += (ans[x] * m[sol][-2-x])
+            ans.append((m[sol][-1]-inner) / m[sol][-sol-2])
     ans.reverse()
     return ans
 
@@ -38,11 +63,14 @@ def linearInterpolation(tbl, x):
 
 def polynomialInterpolation(tbl, x):
     m = []
+    sol = []
     for i in range(len(tbl)):
         row = [1, tbl[i][0], (tbl[i][0])**2, tbl[i][1]]
         m.append(row)
+    for i in range(len(tbl)):
+        sol.append(tbl[i][1])
 
-    a = gauss(m)
+    a = GaussSeidel(m, sol)
     ans = 0
     for i in range(len(a)):
         ans += a[i] * x**i
@@ -145,8 +173,11 @@ def cubic_splinesInterpolation(tbl, x):
 # tbl = ((1, 0), (1.2, 0.112463), (1.3, 0.167996), (1.4, 0.222709))
 # x = 1.28
 
-tbl = ((0, 0), (math.pi / 6, 0.5), (math.pi / 4, 0.7072), (math.pi / 2, 1))
-x = math.pi / 3
+# tbl = ((0, 0), (math.pi / 6, 0.5), (math.pi / 4, 0.7072), (math.pi / 2, 1))
+# x = math.pi / 3
+
+tbl = ((1.2, 1.5), (1.3, 2.69), (1.4, 3.9), (1.5, 5.12), (1.6, 7.37))
+x = 1.42
 
 if x < tbl[0][0] or x > tbl[len(tbl) - 1][0]:
     print("x is not in range")
@@ -154,7 +185,7 @@ if x < tbl[0][0] or x > tbl[len(tbl) - 1][0]:
 
 # print("Linear Interpolation:", linearInterpolation(tbl, x))
 # # print(gauss([[1, 1, 1, 0.8415], [1, 2, 4, 0.9093], [1, 3, 9, 0.1411]]))
-# print("Polynomial Interpolation:", polynomialInterpolation(tbl, x))
+print("Polynomial Interpolation:", polynomialInterpolation(tbl, x))
 # print("Lagrange Interpolation:", lagrangeInterpolation(tbl, x))
-# print("Neville Interpolation:", nevilleInterpolation(tbl, x))
-print("Cubic Splines Interpolation:", cubic_splinesInterpolation(tbl, x))
+print("Neville Interpolation:", nevilleInterpolation(tbl, x))
+# print("Cubic Splines Interpolation:", cubic_splinesInterpolation(tbl, x))
