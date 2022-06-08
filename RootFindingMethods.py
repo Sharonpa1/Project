@@ -1,3 +1,5 @@
+from math import *
+
 import sympy as sp
 
 
@@ -47,11 +49,11 @@ def secant_method(f, _range, eps):
 
 
 x = sp.symbols('x')
-f = x ** 2 - 5 * x + 2
+f = (sp.sin(x ** 4 + 5 * x - 6)) / (2 * e ** (-2 * x + 5))
 f_prime = f.diff(x)
 f = sp.lambdify(x, f)
 f_prime = sp.lambdify(x, f_prime)
-_range = [0, 5]
+_range = [-1.5, 1.5]
 eps = 0.0001
 sectionSize = 0.1
 numOfSections = int((_range[1] - _range[0]) / sectionSize) + 1
@@ -100,4 +102,5 @@ if len(roots_dict) == 0:
     print("No roots founded.")
 
 for item in roots_dict:
-    print("Root:", float("{0:.6f}".format(item)), ", founded after:", roots_dict[item], "iterations.")
+    print("Root:", item, ", founded after:", roots_dict[item], "iterations.")
+    # print("Root:", float("{0:.6f}".format(item)), ", founded after:", roots_dict[item], "iterations.")
